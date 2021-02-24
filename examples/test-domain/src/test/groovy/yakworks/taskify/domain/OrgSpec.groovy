@@ -29,8 +29,9 @@ class OrgSpec extends Specification implements DomainRepoTest<Org>, SecurityTest
         then:
         def org = Org.findByName("foo")
         org
+        1 == org.type.id
         def orgType = OrgType.get(org.type.id)
-        orgType
+        null == orgType
 
     }
 
