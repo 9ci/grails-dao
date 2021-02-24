@@ -4,11 +4,13 @@ package yakworks.taskify
 import gorm.tools.security.domain.AppUser
 import gorm.tools.security.domain.SecRole
 import gorm.tools.security.domain.SecRoleUser
+import yakworks.rally.orgs.model.Org
+import yakworks.rally.testing.TestSeedData
 
 class BootStrap {
 
     def init = { servletContext ->
-        // buildOrgs()
+        buildOrgs()
         buildAppUser()
     }
 

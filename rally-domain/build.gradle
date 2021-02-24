@@ -16,6 +16,10 @@ dependencies {
   //jasper uses itext 2.1.7 which uses bouncy 138, so until we sort that out we keep it stuck there
   //used only in commons password stuff
   compileOnly "bouncycastle:bcprov-jdk14:138"
+
+  //used for bundled Test traits
+  compileOnly "org.grails:grails-gorm-testing-support"
+  compileOnly "org.grails.plugins:build-test-data:$vBuildTestData"
 }
 
 // FIXME for now exlude the Orgs and force and implementation of them in app until we figure out how to use shadowJar

@@ -139,12 +139,11 @@ class ContactRepo implements GormRepo<Contact> {
 
         GormUtils.copyDomain(toContat, from)
         toContat.flex = GormUtils.copyDomain(ContactFlex, ContactFlex.get(from.flexId as Long), [contact: toContat])
-
-        from.phones.each { ContactPhone p ->
+        for ( ContactPhone p : from.phones) {
             toContat.addToPhones(GormUtils.copyDomain(ContactPhone, p, [contact: toContat]))
         }
 
-        from.emails.each { ContactEmail e ->
+        for ( ContactEmail e : from.emails) {
             toContat.addToEmails(GormUtils.copyDomain(ContactEmail, e, [contact: toContat]))
         }
 
