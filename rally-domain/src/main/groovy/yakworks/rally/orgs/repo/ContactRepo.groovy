@@ -147,10 +147,11 @@ class ContactRepo implements GormRepo<Contact> {
             toContat.addToEmails(GormUtils.copyDomain(ContactEmail, e, [contact: toContat]))
         }
 
-        from.sources.each { ContactSource s ->
+        for ( ContactSource s : from.sources) {
             toContat.addToSources(GormUtils.copyDomain(ContactSource, s, [contact: toContat]))
         }
-        from.locations.each { Location l ->
+
+        for ( Location l : from.locations) {
             Location c = GormUtils.copyDomain(Location, l, [org: toContat.org, contact: toContat])
             c.persist()
         }

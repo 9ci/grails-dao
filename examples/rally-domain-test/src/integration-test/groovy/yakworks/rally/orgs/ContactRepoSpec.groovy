@@ -16,7 +16,6 @@ class ContactRepoSpec extends Specification implements DomainRepoTest<Contact> {
 void "test copy"() {
         when:
         def org = Org.findByName("Name1")
-    def ooo = org
         def contact = Contact.create(org: org, name:"Joe", firstName: "Joe")
 
         then:
