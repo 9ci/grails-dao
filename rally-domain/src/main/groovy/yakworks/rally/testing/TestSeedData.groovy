@@ -1,11 +1,16 @@
+/*
+* Copyright 2021 Yak.Works - Licensed under the Apache License, Version 2.0 (the "License")
+* You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+*/
 package yakworks.rally.testing
+
+import groovy.transform.CompileStatic
 
 import gorm.tools.testing.unit.DataRepoTest
 import gorm.tools.testing.unit.DomainRepoTest
 import grails.buildtestdata.BuildDataTest
 import grails.buildtestdata.TestData
 import grails.buildtestdata.TestDataBuilder
-import groovy.transform.CompileStatic
 import yakworks.rally.orgs.model.Location
 import yakworks.rally.orgs.model.Org
 import yakworks.rally.orgs.model.OrgFlex
