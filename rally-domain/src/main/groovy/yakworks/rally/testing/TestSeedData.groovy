@@ -6,18 +6,9 @@ package yakworks.rally.testing
 
 import groovy.transform.CompileStatic
 
-import gorm.tools.testing.unit.DataRepoTest
-import gorm.tools.testing.unit.DomainRepoTest
 import grails.buildtestdata.BuildDataTest
-import grails.buildtestdata.TestData
-import grails.buildtestdata.TestDataBuilder
 import yakworks.rally.orgs.model.Location
 import yakworks.rally.orgs.model.Org
-import yakworks.rally.orgs.model.OrgFlex
-import yakworks.rally.orgs.model.OrgInfo
-import yakworks.rally.orgs.model.OrgSource
-import yakworks.rally.orgs.model.OrgTag
-import yakworks.rally.orgs.model.OrgType
 import yakworks.rally.orgs.model.OrgTypeSetup
 
 @CompileStatic

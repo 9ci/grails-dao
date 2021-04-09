@@ -8,8 +8,6 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 
 import gorm.tools.repository.GormRepository
-import gorm.tools.repository.events.AfterBindEvent
-import gorm.tools.repository.events.RepoListener
 import yakworks.rally.activity.model.Activity
 import yakworks.rally.activity.model.ActivityLink
 import yakworks.rally.common.LinkedEntityRepoTrait
