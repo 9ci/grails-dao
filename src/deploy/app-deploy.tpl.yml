@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${APP_NAME} # a name for the deployment
+  namespace: ${KUB_NAMESPACE}
+  labels:
+    app: ${APP_NAME} # tag with the app:grello, labels are kind of like tags
+spec:
+  replicas: 1 # tells deployment to run 1 pods matching the template
+  selector:
+    matchLabels:
+      app: ${APP_NAME} # points to label key in pod template below
+  template: # pod template
+    metadata:
+      name: ${APP_NAME}-pod
+      labels:
+        app: ${APP_NAME} # the pod key label, labels are like tags
+    spec: # containers in the pod
+      imagePullSecrets:
+        - name: 9cibot-dockerhub
+      initContainers: # runs before containers, wait for mysql to start
+        - name: db-readiness-check
+          image: yakworks/readiness-check # ubuntu yakworks/dnsutils # tutum/dnsutils #
+          env:
+            - name: SERVICE_NAME
+              value: ${KUB_DB_SERVICE_NAME}.${KUB_NAMESPACE}.svc.cluster.local # the service to dig
+
+      containers:
+        - image: ${DOCKER_APP_URL_CURRENT_VERSION}
+          imagePullPolicy: Always
+          name: ${APP_NAME}-grails-app #just normal docker name
+          # uncomment the LOGGING_CONFIG to enable
+          env:
+            - name: LOGGING_CONFIG
+              value: '/app/conf/logback.groovy'
+          ports:
+            - containerPort: 8080
+              name: server
+            - containerPort: 8081
+              name: jmx
+          volumeMounts:
+            - mountPath: "/app/conf"
+              name: ${APP_NAME}-conf
+            - mountPath: "/ninebox"
+              name: nfs-ninebox
+      volumes:
+        - name: ${APP_NAME}-conf
+          configMap:
+            name: ${APP_NAME}-config
+        - name: nfs-ninebox
+          nfs:
+            # TODO: See README for why name won't work here and why IP is needed
+            server: ${KUB_NFS_NINEBOX}
+            path: "/"

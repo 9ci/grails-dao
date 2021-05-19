@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${KUB_DB_SERVICE_NAME}  # Name of the deployment/workload
+  namespace: ${KUB_NAMESPACE}
+  labels:             # Labels/tags applied to this deployment/workload
+    db: ${KUB_DB_SERVICE_NAME}
+    app: ${APP_NAME}
+spec:
+  selector:
+    matchLabels:      # This deployment applies to the Pods matching the specified labels
+      db: ${KUB_DB_SERVICE_NAME}
+  strategy:
+    type: Recreate
+  template:           # Template for the Pods in this deployment
+    metadata:
+      labels:         # Labels/Tags for selectors to be applied to the Pods in this deployment
+        db: ${KUB_DB_SERVICE_NAME}
+    spec:             # The spec for the containers that will be run inside the Pods in this deployment
+      imagePullSecrets:
+        - name: 9cibot-dockerhub
+      containers:
+        - image: ${DOCKER_NINEDB_URL}
+          imagePullPolicy: Always
+          name: ${KUB_DB_SERVICE_NAME} # just normal docker name
+          env:
+            - name: ${PASS_VAR_NAME}
+              value: ${DB_PASSWORD}
+          ports:
+            - containerPort: ${DB_PORT}
+              name: db-port
+
+          #see https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
+          # livenessProbe:
+          #   exec:
+          #     command:
+          #     - bash
+          #     - "-c"
+          #     - |
+          #       set -ex
+          #       mysqladmin -p$MYSQL_ROOT_PASSWORD ping &> /dev/null
+          #   initialDelaySeconds: 20
+          #   periodSeconds: 10
+          #   timeoutSeconds: 5
+          # readinessProbe:
+          #   exec:
+          #     command:
+          #     - bash
+          #     - "-c"
+          #     - |
+          #       set -ex
+          #       mysql -h 127.0.0.1 -p$MYSQL_ROOT_PASSWORD -e "SELECT 1" &> /dev/null
+          #     #command: ["mysql", "-uroot", "--password=123Foobar", "-h", "127.0.0.1", "-e", "SELECT 1"]
+          #   initialDelaySeconds: 5
+          #   periodSeconds: 2
+          #   timeoutSeconds: 1

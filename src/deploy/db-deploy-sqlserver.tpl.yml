@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${KUB_DB_SERVICE_NAME}  # Name of the deployment/workload
+  namespace: ${KUB_NAMESPACE}
+  labels:             # Labels/tags applied to this deployment/workload
+    db: ${KUB_DB_SERVICE_NAME}
+    app: ${APP_NAME}
+spec:
+  selector:
+    matchLabels:      # This deployment applies to the Pods matching the specified labels
+      db: ${KUB_DB_SERVICE_NAME}
+  strategy:
+    type: Recreate
+  template:           # Template for the Pods in this deployment
+    metadata:
+      labels:         # Labels/Tags for selectors to be applied to the Pods in this deployment
+        db: ${KUB_DB_SERVICE_NAME}
+    spec:             # The spec for the containers that will be run inside the Pods in this deployment
+      imagePullSecrets:
+        - name: 9cibot-dockerhub
+      containers:
+      - image: yakworks/mssql-server:2017
+        imagePullPolicy: Always
+        name: ${KUB_DB_SERVICE_NAME} # just normal docker name
+        env:
+          - name: ${PASS_VAR_NAME}
+            value: ${DB_PASSWORD}
+        ports:
+          - containerPort: ${DB_PORT}
+            name: db-port
+        volumeMounts:
+          - mountPath: "/docker-entrypoint-initdb.d"
+            name: nfs-ninebox
+      volumes:
+        - name: nfs-ninebox
+          nfs:
+            # TODO: See README for why name won't work here and why IP is needed
+            server: 10.43.249.143
+            path: "/kub/${KUB_NAMESPACE}/initdb.d"  # path in ninebox to your initdb where you keep your db backup and sql files (for example ninebox/ninecedsmall/initdb.d)
+ 
+
+

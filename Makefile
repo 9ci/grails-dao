@@ -44,3 +44,34 @@ test-domain-int-test: ## runs ./gradlew integrationTest
 show-compile-dependencies: ## shows gorm-tools:dependencies --configuration compile
 	# ./gradlew gorm-tools:dependencies --configuration compileClasspath
 	./gradlew gorm-tools:dependencies --configuration compile
+
+# -- DOCKER ---
+build/docker-build/%: ##Builds docker image, for example build/docker-build/restify
+	${build.sh} buildDocker $*
+
+# run-docker-app/restify
+run-docker-app/%: db-start build/docker-build/%
+	${build.sh} runDockerApp $* ${DBMS}
+
+# dock-deploy/restify
+dock-deploy/%:
+	${build.sh} dockDeploy $*
+
+# ---- Kubernetes Deploy ------
+kube-clean/%: ## removes everything with the app=${APP_NAME}
+# 	${kube.sh} clean app=${APP_NAME} ${KUB_NAMESPACE}
+	${kube.sh} clean app="restify-v10-0-x" ${KUB_NAMESPACE}  # XXX why is APP_NAME returning just restify?
+
+kube-deploy/%: kube-create-ns ## run deploy to rancher/kubernetes
+	${build.sh} applyTpl ${DBMS} $*/src/deploy/db-deploy-${DBMS}.tpl.yml
+	${build.sh} applyTpl ${DBMS} $*/src/deploy/db-service.tpl.yml
+	${build.sh} applyTpl ${DBMS} $*/src/deploy/app-deploy.tpl.yml
+	${build.sh} applyTpl ${DBMS} $*/src/deploy/app-service.tpl.yml
+	${build.sh} applyTpl ${DBMS} $*/src/deploy/app-configmap.tpl.yml
+
+kube-cust-deploy/%: kube-create-ns ## run deploy to rancher/kubernetes using variables set in user.env
+	${build.sh} applyTpl ${DBMS} $*/src/deploy/db-deploy-${DBMS}.tpl.yml
+	${build.sh} applyTpl ${DBMS} $*/src/deploy/db-service.tpl.yml
+	${build.sh} applyTpl ${DBMS} $*/src/deploy/app-cust-deploy.tpl.yml
+	${build.sh} applyTpl ${DBMS} $*/src/deploy/app-service.tpl.yml
+	${build.sh} applyTpl ${DBMS} $*/src/deploy/app-configmap.tpl.yml

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${KUB_DB_SERVICE_NAME} # also the DNS name so we can connec to "jdbc:mysql://mysql-9db:3306/rcm_9ci_dev"
+  namespace: ${KUB_NAMESPACE}
+  labels:            # Labels/tags for selectors
+    db: ${KUB_DB_SERVICE_NAME}
+    app: ${APP_NAME}
+spec:
+  ports:
+    - port: ${DB_PORT}
+  selector:         # Selects any Pod with labels `db=nine-db-mysql-99x`
+    db: ${KUB_DB_SERVICE_NAME}
+  clusterIP: None   # ?? not sure why we can make this none

@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${APP_NAME}-config
+  namespace: ${KUB_NAMESPACE}
+  labels:
+    app: ${APP_NAME} # tag with the app:demo10, labels are kind of like tags
+data:
+  logback.groovy: |+
+    scan("5 seconds")
+    println "#### using kubernetes ${APP_NAME}-config for logback config"
+    appender('STDOUT', ConsoleAppender) {
+        encoder(PatternLayoutEncoder) {
+            charset = java.nio.charset.Charset.forName('UTF-8')
+            pattern = '%d{HH:mm:ss.SSS} [%t] %-5level %logger{48} - %msg%n'
+        }
+    }
+    root(ERROR, ['STDOUT'])
+    logger("grails.app", INFO, ['STDOUT'], false)
+    logger("nine", INFO, ['STDOUT'], false)
+  docker-arApi-config.groovy: |+
+    println "### reading external config arApi-config.groovy"
+    grails.serverURL = "https://${KUB_INGRESS_URL}"
+    String host = '${KUB_DB_SERVICE_NAME}.${KUB_NAMESPACE}.svc.cluster.local'
+    String jdbcUrl = "jdbc:mysql://$host:3306/rcm_9ci_dev?useSSL=false&allowMultiQueries=true"
+    String user = "root"
+    String driverClass = "com.mysql.jdbc.Driver"
+    String dialect = "org.hibernate.dialect.MySQL5InnoDBDialect"
+    String dbmsName = "${DBMS}"
+    if (dbmsName == 'sqlserver') {
+      driverClass = 'com.microsoft.sqlserver.jdbc.SQLServerDriver'
+      user = 'sa'
+      pooled = true
+      jdbcUrl = "jdbc:sqlserver://$host:1433;databaseName=${KUB_NAMESPACE}"
+    }
+    println "using EXTERNAL APP_CONFIGMAP jdbc URL $jdbcUrl from DBMS ${DBMS}"
+    dataSource {
+      url = jdbcUrl
+      driverClassName= driverClass
+      username = user
+      password = "${DB_PASSWORD}"
+      hibernate.jdbc.batch_size = 50 //default of batch size when to flush
+    }
+    hibernate.dialect = dialect
+    dataSources {
+      history {
+        dialect = dialect
+        url = jdbcUrl
+        driverClassName = driverClass
+        username = user
+        password = "${DB_PASSWORD}"
+        hibernate.jdbc.batch_size = 50 //default of batch size when to flush
+      }
+    }
+    nine {
+      isDemo = true
+      resources {
+        rootLocation = { "/app/resources" }
+        imageFiles {
+          isEnabled = true
+          location = "checkImages"
+        }
+        autocash {
+            importDir = 'autocash/import'
+        }
+        tempDir = {
+          File file = new File("rootLocation/tempDir")
+          if (!file.exists()) file.mkdirs()
+          return file.canonicalPath
+        }
+        attachments {
+          location = 'attachments'
+          creditFiles.location = 'attachments/creditFiles'
+        }
+      }
+      oci {
+        client {
+          api.endpoint = "${OCI_API_URL}"
+          imageFiles.location = "rootLocation/checkImages"
+        }
+        api.imageFiles.unZippedArBatch ="arbatch_images"
+      }
+    }
