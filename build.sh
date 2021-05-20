@@ -102,10 +102,6 @@ function runDockerApp {
   dockerStart $appName  \
     --network builder-net \
     -p 8080:8080 \
-    -e LOGGING_CONFIG='/app/conf/logback.groovy' \
-    -e DB_HOST="$DOCK_DB_BUILD_NAME" \
-    -v `pwd`/resources/docker-demo-conf:/app/conf \
-    -v `pwd`/resources:/app/resources \
     $DOCKER_APP_URL
 }
 

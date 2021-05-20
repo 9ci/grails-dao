@@ -7,6 +7,7 @@ import grails.util.Environment
 import java.nio.charset.Charset
 
 import static ch.qos.logback.classic.Level.ERROR
+import static ch.qos.logback.classic.Level.DEBUG
 import static ch.qos.logback.core.spi.FilterReply.DENY
 import static ch.qos.logback.core.spi.FilterReply.NEUTRAL
 
@@ -63,4 +64,4 @@ if (Environment.getCurrent() == Environment.TEST && targetDir != null) {
     logger("StackTrace", ERROR, ['TESTING-ERRORS'], false)
     rootAppenders.add 'TESTING-ERRORS'
 }
-root(ERROR,rootAppenders)
+root(DEBUG,rootAppenders)
