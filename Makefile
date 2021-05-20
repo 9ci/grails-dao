@@ -12,9 +12,9 @@ shResults := $(shell $(build.sh) makeEnvFile $(BUILD_ENV) $(DB_VENDOR) $(USE_BUI
 # import/sinclude the variables file to make it availiable to make as well
 sinclude ./build/make/$(BUILD_ENV)_$(DB_VENDOR).env
 # include common makefile templates
-include ./build/bin/Makefile-docker.make
+include ./build/bin/Makefile-docker-db.make
 include ./build/bin/Makefile-gradle.make
-include ./build/bin/Makefile-help.make
+
 
 # $(info shResults $(shResults)) # logs out the bash echo from shResults
 # $(info DBMS=$(DBMS) BUILD_ENV=$(BUILD_ENV) DOCK_BUILDER_NAME=${DOCK_BUILDER_NAME} DOCK_DB_BUILD_NAME=${DOCK_DB_BUILD_NAME} DockerExec=${DockerExec} DockerDbExec=${DockerDbExec})
@@ -75,3 +75,5 @@ kube-cust-deploy/%: kube-create-ns ## run deploy to rancher/kubernetes using var
 	${build.sh} applyTpl ${DBMS} $*/src/deploy/app-cust-deploy.tpl.yml
 	${build.sh} applyTpl ${DBMS} $*/src/deploy/app-service.tpl.yml
 	${build.sh} applyTpl ${DBMS} $*/src/deploy/app-configmap.tpl.yml
+
+include ./build/bin/Makefile-help.make
