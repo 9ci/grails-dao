@@ -2,6 +2,7 @@ SHELL := /bin/bash
 MAKEFLAGS += -rR
 # -- bin and sh scripts --
 build.sh := ./build.sh
+kube.sh := ${bin_dir}/kube
 DB_VENDOR := h2
 # call it first to git clone the build/bn
 shResults := $(shell $(build.sh))
@@ -14,7 +15,7 @@ sinclude ./build/make/$(BUILD_ENV)_$(DB_VENDOR).env
 # include common makefile templates
 include ./build/bin/Makefile-docker-db.make
 include ./build/bin/Makefile-gradle.make
-
+include ./build/bin/Makefile.deploy-common-targets
 
 # $(info shResults $(shResults)) # logs out the bash echo from shResults
 # $(info DBMS=$(DBMS) BUILD_ENV=$(BUILD_ENV) DOCK_BUILDER_NAME=${DOCK_BUILDER_NAME} DOCK_DB_BUILD_NAME=${DOCK_DB_BUILD_NAME} DockerExec=${DockerExec} DockerDbExec=${DockerDbExec})
@@ -50,7 +51,7 @@ build/docker-build/%: ##Builds docker image, for example build/docker-build/rest
 	${build.sh} buildDocker $*
 
 # run-docker-app/restify
-run-docker-app/%: db-start build/docker-build/%
+run-docker-app/%: build/docker-build/%
 	${build.sh} runDockerApp $* ${DBMS}
 
 # dock-deploy/restify
