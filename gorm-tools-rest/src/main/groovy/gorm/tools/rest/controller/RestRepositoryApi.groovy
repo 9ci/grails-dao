@@ -24,6 +24,7 @@ import gorm.tools.rest.JsonParserTrait
 import gorm.tools.rest.RestApiConfig
 import grails.artefact.controller.RestResponder
 import grails.artefact.controller.support.ResponseRenderer
+import grails.gorm.DetachedCriteria
 import grails.util.GrailsNameUtils
 import grails.validation.ValidationException
 import grails.web.Action
@@ -160,6 +161,26 @@ trait RestRepositoryApi<D extends PersistableRepoEntity> implements JsonParserTr
         Pager pager = pagedQuery(params, 'picklist')
         Map renderArgs = [:]
         respond([view: '/object/_pagedList'], [pager: pager, renderArgs: renderArgs])
+    }
+
+    @Action
+    def countTotals() {
+        println params
+        List<String> sums = params['sums'].toString().split('[,]') as List
+        DetachedCriteria criteria = getRepo().query(params as Map)
+        Object projections = criteria.
+            projections {
+                for (String sumField : sums) {
+                    sum(sumField)
+                }
+            }
+
+        List totalsData = sums.size() > 1 ? (List) projections[0] : [projections[0]]
+        Map result = [:]
+        sums.eachWithIndex { String name, Integer i ->
+            result[name] = totalsData[i]
+        }
+        respond(result)
     }
 
     @Action

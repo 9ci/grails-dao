@@ -390,7 +390,7 @@ See example:
 ```groovy
 Org.repo.mangoQuery.countTotals(domainClass, [
   criteria: [name: "Virgin%", type: "New"]
-], ["amount", credit]){
+], ["amount", "credit"]){
   gt "id", 5
 }
 ```

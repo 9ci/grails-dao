@@ -4,6 +4,7 @@
 */
 package gorm.tools.mango
 
+import gorm.tools.mango.api.MangoQuery
 import gorm.tools.testing.hibernate.GormToolsHibernateSpec
 import grails.testing.spring.AutowiredTest
 import testing.Address
@@ -179,5 +180,19 @@ class DefaultMangoQuerySpec extends GormToolsHibernateSpec implements AutowiredT
         o.location.address == 'City2'
 
     }
+    void "countTotals check"() {
+        when:
+        def o = mangoQuery.countTotals(Cust, [:], ['amount', 'amount2'])
+
+        then:
+        o == [amount: 6633.00, amount2: 98505.00]
+
+        when:
+        o = mangoQuery.countTotals(Cust, [:], ['amount'])
+
+        then:
+        o == [amount: 6633.00]
+    }
+
 
 }

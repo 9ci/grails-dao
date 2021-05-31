@@ -86,16 +86,14 @@ class DefaultMangoQuery implements MangoQuery {
 
         DetachedCriteria mangoCriteria = query(domainClass, params, closure)
 
-        List totalList
-        totalList = mangoCriteria.list {
+         Object projections = mangoCriteria.
             projections {
                 for (String sumField : sums) {
                     sum(sumField)
                 }
             }
-        }
 
-        List totalsData = (List) totalList[0]
+        List totalsData = sums.size() > 1 ? (List) projections[0] : [projections[0]]
         Map result = [:]
         sums.eachWithIndex { String name, Integer i ->
             result[name] = totalsData[i]

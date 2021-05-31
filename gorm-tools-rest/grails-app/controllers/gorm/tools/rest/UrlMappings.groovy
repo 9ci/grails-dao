@@ -37,6 +37,7 @@ class UrlMappings {
 
                     get "/${cName}/list(.$format)?"(controller: cName, action: "list", namespace: 'api')
                     get "/${cName}/picklist(.$format)?"(controller: cName, action: "picklist", namespace: 'api')
+                    get "/${cName}/countTotals(.$format)?"(controller: cName, action: "countTotals", namespace: 'api')
                     post "/${cName}/list(.$format)?"(controller: cName, action: "listPost", namespace: 'api')
 
                     post "/${cName}(.$format)?"(controller: cName, action: "post", namespace: 'api')
