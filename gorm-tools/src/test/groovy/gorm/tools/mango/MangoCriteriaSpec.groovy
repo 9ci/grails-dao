@@ -571,4 +571,53 @@ class MangoCriteriaSpec extends GormToolsHibernateSpec {
         res[5].id > res[6].id
     }
 
+    def 'groupBy example'() {
+        when:
+        MangoDetachedCriteria criteria = build([:])
+        criteria.projections {
+            groupProperty('id')
+        }
+        def list = criteria.list()
+        then:
+        list == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+        when:
+        criteria.projections {
+            groupProperty('amount')
+        }
+        list = criteria.list()
+        then:
+        list == [[1, 0.00], [2, 1.34], [3, 2.68], [4, 4.02], [5, 5.36], [6, 6.70], [7, 8.04], [8, 9.38], [9, 10.72], [10, 12.06]]
+    }
+
+    def 'sum example'() {
+        when:
+        MangoDetachedCriteria criteria = build([:])
+        criteria.projections {
+            sum('id')
+        }
+        def list = criteria.list()
+        then:
+        list == [55]
+
+        when:
+        criteria.projections {
+            sum('amount')
+        }
+        list = criteria.list()
+        then:
+        list == [[55, 60.30]]
+
+    }
+
+ def 'alias example'() {
+        when:
+        MangoDetachedCriteria criteria = build([:])
+        def list = criteria.setAlias('ddd').projections{sum('id')}.list()
+
+        then:
+        list == [55]
+
+    }
+
 }
