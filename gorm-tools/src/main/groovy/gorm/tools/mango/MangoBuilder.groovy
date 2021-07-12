@@ -24,6 +24,7 @@ import static gorm.tools.mango.MangoOps.CompareOp
 import static gorm.tools.mango.MangoOps.ExistOp
 import static gorm.tools.mango.MangoOps.JunctionOp
 import static gorm.tools.mango.MangoOps.OverrideOp
+import static gorm.tools.mango.MangoOps.PROJECTIONS
 import static gorm.tools.mango.MangoOps.PropertyOp
 import static gorm.tools.mango.MangoOps.Q
 import static gorm.tools.mango.MangoOps.QSEARCH
@@ -78,7 +79,6 @@ class MangoBuilder {
         log.debug "applyMap $mangoMap"
         for (String key : mangoMap.keySet()) {
             def val = mangoMap[key]
-
             if(key == SORT) {
                 order(criteria, val)
                 continue
@@ -86,6 +86,11 @@ class MangoBuilder {
 
             if(key == QSEARCH || key == Q) {
                 qSearch(criteria, val)
+                continue
+            }
+
+            if(key == PROJECTIONS) {
+                projections(criteria, val)
                 continue
             }
 
@@ -227,6 +232,27 @@ class MangoBuilder {
             // println "criteriaMap $criteriaMap"
             return applyMap(criteria, MangoTidyMap.tidy(criteriaMap))
         }
+    }
+
+
+    @CompileDynamic
+    DetachedCriteria projections(DetachedCriteria criteria, Object projections) {
+        (projections as List<Map>).each { Map projection ->
+            String field = projection.values()[0].toString()
+            MangoOps.ProjectionsOp pop = EnumUtils.getEnum(MangoOps.ProjectionsOp, projection.keySet()[0] as String)
+            if (field.contains('.')) {
+                List path = field.split("[.]") as List
+                criteria.createAlias(path.init().join('.'), path.init().join(''))
+                field = path.last()
+                //criteria.criteria.last().projectionList.invokeMethod(pop.getOp(), field)
+               criteria.associationCriteriaMap[path.init().join('.')].projectionList.invokeMethod(pop.getOp(), field)
+            } else {
+                criteria.projectionList.invokeMethod(pop.getOp(), field)
+            }
+
+
+        }
+        criteria
     }
 
     @CompileDynamic //dynamic so we can access the protected targetClass

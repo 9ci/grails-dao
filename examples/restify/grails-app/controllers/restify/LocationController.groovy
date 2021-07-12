@@ -6,6 +6,7 @@ package restify
 
 import groovy.transform.CompileStatic
 
+import gorm.tools.beans.Pager
 import gorm.tools.rest.controller.RestRepositoryApi
 import yakworks.rally.orgs.model.Location
 
@@ -19,6 +20,13 @@ class LocationController implements RestRepositoryApi<Location> {
         q.street = q.street == null ? null : "foo street"
         Location instance = getRepo().create(q)
         respond instance, [status: CREATED] //201
+    }
+
+    //TODO: remove it added just for debugging
+    def countTotals() {
+        Pager pager = pagedQuery([/*id: ['$gt': 1010],*/ '$projections': [['$sum': 'contact.id']]], 'list')
+        // passing renderArgs args would be usefull for 'renderNulls' if we want to include/exclude
+        respond([view: '/object/_pagedList'], [pager: pager, renderArgs: [:]])
     }
 
 }

@@ -170,6 +170,12 @@ class Pager {
         return this
     }
 
+    //TODo: add docs and includes support,  added to be able to set data for not entityMap, rojections for example
+    Pager setupList(List dlist, List includes = null){
+        this.data = dlist
+        this
+    }
+
     /**
      * Setup the list as a EntityMapList passing in the includes which prepares it to be ready for
      * an export to json

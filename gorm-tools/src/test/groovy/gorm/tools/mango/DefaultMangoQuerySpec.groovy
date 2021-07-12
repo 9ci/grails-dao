@@ -180,4 +180,19 @@ class DefaultMangoQuerySpec extends GormToolsHibernateSpec implements AutowiredT
 
     }
 
+    def "projections check"() {
+        when:
+        def list = mangoQuery.queryList(Cust, ['$projections': [['$sum':'amount']]])
+        then:
+        noExceptionThrown()
+        list == [6633.00]
+
+/*        when:
+        list = mangoQuery.queryList(Cust, ['$projections': [['$sum':'location.nested.value']]])
+        then:
+        noExceptionThrown()
+        list == []*/
+    }
+
+
 }

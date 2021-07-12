@@ -223,6 +223,13 @@ class MangoTidyMapSpec extends Specification {
         mmap == ['$sort':[name: 'asc', foo: 'desc']]
     }
 
+    void 'test projections'(){
+        when:
+        def mmap = tidy($projections: [ [$sum: 'amount'], [$sum: 'origAmount']])
+        then:
+        mmap == [$projections:[[$sum:'amount'], [$sum:'origAmount']]]
+    }
+
     Map flatten(Map m, String separator = '.') {
         m.collectEntries { k, v -> v instanceof Map ? flatten(v, separator).collectEntries { q, r -> [(k + separator + q): r] } : [(k): v] }
     }

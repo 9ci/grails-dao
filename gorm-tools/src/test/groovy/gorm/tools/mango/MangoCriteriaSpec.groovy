@@ -571,4 +571,36 @@ class MangoCriteriaSpec extends GormToolsHibernateSpec {
         res[5].id > res[6].id
     }
 
+
+    def "test projections"() {
+        when:
+        List res = build($projections:[[$sum:'amount']]).list()
+
+        then:
+        res == [60.30]
+
+        when:
+        res = build($projections:[[$sum:'amount'], [$sum:'id']]).list()
+
+        then:
+        res == [[60.30, 55]]
+
+        when:
+        res = build([inactive: false, $projections:[[$sum:'amount']]]).list()
+
+        then:
+        res == [26.80]
+
+        when:
+        res = build([$projections:[[$sum:'location.nested.value']]]).list()
+
+        then:
+        res == [[55.00]]
+
+        when:
+        res = build([inactive: false, $projections:[[$sum:'location.nested.value']]]).list()
+
+        then:
+        res == [[55.00]]
+    }
 }

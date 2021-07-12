@@ -24,6 +24,7 @@ class MangoOps {
     public static final String SORT = '$sort'
     public static final String Q = '$q'
     public static final String QSEARCH = '$qSearch'
+    public static final String PROJECTIONS = '$projections'
 
     @CompileStatic
     static enum CompareOp {
@@ -87,6 +88,18 @@ class MangoOps {
         String getOp(){ return op }
 
         ExistOp() {
+            this.op = name().substring(1) //remove $
+        }
+    }
+
+    @CompileStatic
+    static enum ProjectionsOp {
+        $sum, $avg
+
+        private final String op
+        String getOp(){ return op }
+
+        ProjectionsOp() {
             this.op = name().substring(1) //remove $
         }
     }

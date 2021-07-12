@@ -168,6 +168,10 @@ trait RestRepositoryApi<D> implements RestApiController {
         Pager pager = new Pager(params)
         // println "params ${params.class} $params"
         List dlist = query(pager, params)
+        //TODO: need to refactor
+        if (params['$projections']){
+            return pager.setupList(dlist)
+        }
         List incs = getIncludes(includesKey)
         EntityMapList entityMapList = entityMapService.createEntityMapList(dlist, incs)
         return pager.setEntityMapList(entityMapList)

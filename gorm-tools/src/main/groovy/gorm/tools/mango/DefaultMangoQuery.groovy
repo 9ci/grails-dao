@@ -6,6 +6,7 @@ package gorm.tools.mango
 
 import groovy.json.JsonParserType
 import groovy.json.JsonSlurper
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 
 import org.springframework.beans.factory.annotation.Autowired
@@ -71,36 +72,6 @@ class DefaultMangoQuery implements MangoQuery {
     @Transactional(readOnly = true)
     public <D> List<D> list(DetachedCriteria<D> criteria, Pager pager) {
         criteria.list(max: pager.max, offset: pager.offset)
-    }
-
-    /**
-     *  Calculates sums for specified properties in enities query restricted by mango criteria
-     *
-     * @param params mango language criteria map
-     * @param sums query of properties names that sums should be calculated for
-     * @param closure additional restriction for criteria
-     * @return map where keys are names of fields and value - sum for restricted entities
-     */
-    @Transactional(readOnly = true)
-    Map countTotals(Class domainClass, Map params = [:], List<String> sums, @DelegatesTo(MangoDetachedCriteria) Closure closure = null) {
-
-        DetachedCriteria mangoCriteria = query(domainClass, params, closure)
-
-        List totalList
-        totalList = mangoCriteria.list {
-            projections {
-                for (String sumField : sums) {
-                    sum(sumField)
-                }
-            }
-        }
-
-        List totalsData = (List) totalList[0]
-        Map result = [:]
-        sums.eachWithIndex { String name, Integer i ->
-            result[name] = totalsData[i]
-        }
-        return result
     }
 
     /**

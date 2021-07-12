@@ -39,6 +39,11 @@ class MangoTidyMap {
      * @return extended map
      */
     static Map pathToMap(String path, Object val, Map map) {
+        //Just fill map with projections
+        if (path == MangoOps.PROJECTIONS) {
+            map[MangoOps.PROJECTIONS] = val
+            return map
+        }
         if (path == MangoOps.SORT) {
             return tidySort(path, val, map)
         }

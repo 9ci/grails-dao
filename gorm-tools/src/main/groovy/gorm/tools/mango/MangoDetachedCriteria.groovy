@@ -43,6 +43,18 @@ class MangoDetachedCriteria<T> extends DetachedCriteria<T> {
         new MangoDetachedCriteria(targetClass, alias)
     }
 
+    @CompileDynamic
+    @Override
+    List<T> list(Map args = Collections.emptyMap(), @DelegatesTo(DetachedCriteria) Closure additionalCriteria = null) {
+        if (!this.associationCriteriaMap?.isEmpty()) {
+            return this.associationCriteriaMap.collect { k, v ->
+                v.list([:], additionalCriteria)
+            }
+
+        }
+        super.list(args, additionalCriteria)
+    }
+
     /**
      * Orders by the specified property name (defaults to ascending)
      *
